@@ -176,11 +176,27 @@ public class App {
     }
 
     public void exercici11() {
-        
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject idiomes = (JSONObject) parser.parse(new FileReader("src/languages.json"));
+            JSONArray llista = llegirTvs();
+            for (Object o : llista) {
+                JSONObject s = (JSONObject) o;
+                String codi = (String) s.get("original_language");
+                if (idiomes.containsKey(codi)) {
+                    s.put("original_language", idiomes.get(codi));
+                }
+            }
+            // Guardem la llista modificada en el fitxer a l'exercici 12
+            System.out.println("Idiomes traduïts en memòria. Recorda guardar (opció 11).");
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     public void exercici12() {
-        
+       try (FileWriter file = new FileWriter("src/tvs_modificat.json")) {
+            file.write(llegirTvs().toJSONString());
+            System.out.println("Fitxer guardat correctament.");
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
 }
