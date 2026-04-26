@@ -1,8 +1,9 @@
-import java.text.ParseException;
-import java.util.*;
-import org.json.simple.*;
-import org.json.simple.parser.*;
-import java.io.*;
+import java.util.Scanner;
+import java.io.FileReader;
+import java.io.FileWriter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONArray;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -23,9 +24,11 @@ public class App {
             System.out.println("7. Llistar la sèrie amb millor puntuació");
             System.out.println("8. Llistar la sèrie amb pitjor puntuació");
             System.out.println("9. Llistar dada interessant");
-            System.out.println("10. ");
-            System.out.println("11. ");
+            System.out.println("10. Canviar idiomes amb el fitxer lenguages.json");
+            System.out.println("11. Escriure dades a un fitxer nou 'tvs_mod.json'");
             System.out.println("12. Sortir");
+
+            try {
             opcio = new Scanner(System.in).nextInt();
         
             switch(opcio){
@@ -65,50 +68,117 @@ public class App {
                 case 12:
                     System.out.println("Fins aviat!");
             }
+            } catch (Exception e) {
+                System.out.println("Error en l'opció introduïda.");
+            }
         }while(opcio!=12);
 
     }
-    private JSONArray llegirTvs() {
+    private JSONArray llegirTvs()  {
         JSONParser parser = new JSONParser();
-        Object obj = null;
         try {
-            obj = parser.parse(new FileReader("../src/tvs.json"));
-        } catch (IOException | ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Object obj = parser.parse(new FileReader("src/tvs.json"));
+            return (JSONArray) obj;
+        } catch (Exception e) {
+            System.out.println("Error al llegir el fitxer: " + e.getMessage());
+            return new JSONArray();
         }
     }
 
     public void exercici2() {
-        
+        JSONArray llista = llegirTvs();
+        System.out.println("Total de sèries: " + llista.size());
     }
+
     public void exercici3() {
-        
+        JSONArray llista = llegirTvs();
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            System.out.println("- " + s.get("name") + " (" + s.get("original_name") + ")");
+        }
     }
+
     public void exercici4() {
-        
+        JSONArray llista = llegirTvs();
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            System.out.println(s.get("name") + " -> Idioma: " + s.get("original_language"));
+        }
     }
+
     public void exercici5() {
-        
+        JSONArray llista = llegirTvs();
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            JSONArray paisos = (JSONArray) s.get("origin_country");
+            System.out.println(s.get("name") + " -> Països: " + paisos.toJSONString());
+        }
     }
+
     public void exercici6() {
-        
+        JSONArray llista = llegirTvs();
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            System.out.print(s.get("name") + " -> Gèneres: ");
+            JSONArray generes = (JSONArray) s.get("genres");
+            for (Object g : generes) {
+                System.out.print(((JSONObject)g).get("name") + " ");
+            }
+            System.out.println();
+        }
     }
+
     public void exercici7() {
-        
+        JSONArray llista = llegirTvs();
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            if (s.get("name").toString().equals("Breaking Bad")) {
+                System.out.println("Detalls de Breaking Bad:");
+                System.out.println("Idioma: " + s.get("original_language"));
+                System.out.println("Nota: " + s.get("vote_average"));
+                System.out.println("Sinopsi: " + s.get("overview"));
+            }
+        }
     }
+
     public void exercici8() {
-        
+        JSONArray llista = llegirTvs();
+        JSONObject millor = null;
+        double max = -1;
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            double nota = Double.parseDouble(s.get("vote_average").toString());
+            if (nota > max) { max = nota; millor = s; }
+        }
+        System.out.println("Millor sèrie: " + millor.get("name") + " (" + max + ")");
     }
+
     public void exercici9() {
-        
+        JSONArray llista = llegirTvs();
+        JSONObject pitjor = null;
+        double min = 11;
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            double nota = Double.parseDouble(s.get("vote_average").toString());
+            if (nota < min) { min = nota; pitjor = s; }
+        }
+        System.out.println("Pitjor sèrie: " + pitjor.get("name") + " (" + min + ")");
     }
+
     public void exercici10() {
-        
+        JSONArray llista = llegirTvs();
+        System.out.println("Sèries amb més de 100 episodis:");
+        for (Object o : llista) {
+            JSONObject s = (JSONObject) o;
+            long eps = (long) s.get("number_of_episodes");
+            if (eps > 100) System.out.println("- " + s.get("name") + ": " + eps);
+        }
     }
+
     public void exercici11() {
         
     }
+
     public void exercici12() {
         
     }
